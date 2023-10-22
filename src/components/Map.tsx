@@ -82,7 +82,7 @@ export const Map = () => {
   useAsync(async () => {
     try {
       // 中間APIのエンドポイントに変更
-      const response = await axios.get("http://localhost:3000/api/post");
+      const response = await axios.get("https://garbage-tracker-k2gruawvb-tokuda99s-projects.vercel.app/api/post");
       console.log(response.data);
       setGPS(response.data.gps);
       setSendDateTime(response.data.sendDateTime);
