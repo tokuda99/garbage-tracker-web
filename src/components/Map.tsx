@@ -68,13 +68,7 @@ export const Map = () => {
     }
   }, [isAvailable]);
 
-  // const getCurrentPosition = () => {
-  //   navigator.geolocation.getCurrentPosition(position => {
-  //     const { latitude, longitude } = position.coords;
-  //     setPosition({ latitude, longitude });
-  //     center = { latitude, longitude}
-  //   });
-  // };
+
 
   const [gps, setGPS] = useState<string>("");
   const [sendDateTime, setSendDateTime] = useState<string>("");
