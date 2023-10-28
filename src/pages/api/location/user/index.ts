@@ -14,20 +14,21 @@ export default async function handler(
           //   res.status(200).json({data:{latitude, longitude }});
           // });
 
-        // 仮の緯度と経度のデータを非同期で取得
-        const latitude = "35 08.1118";
-        const longitude = "0136 58.6933";
-        const sendDateTime = "2023-10-04 18:43:47";
-
-        const locationData = {
-          data: {
-            sendDateTime,
-            gps: `${latitude} ${longitude}`,
-          },
-        };
-
-        // レスポンスとしてJSONデータを返す
-        res.status(200).json(locationData);
+          const latitude = 35.682839;
+          const longitude = 139.759455;
+          const latitude2 = 35.682839;
+          const longitude2 = 139.759455;
+          const locationData = {
+            data: {
+              latitude,
+              longitude,
+              latitude2,
+              longitude2,
+            },
+          };
+      
+          // レスポンスとしてJSONデータを返す
+          res.status(200).json(locationData);
       } catch (error) {
         console.error('エラー:', error);
         res.status(500).json({ error: "内部サーバーエラー" });
