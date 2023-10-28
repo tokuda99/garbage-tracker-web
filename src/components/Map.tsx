@@ -76,7 +76,7 @@ export const Map = () => {
   useAsync(async () => {
     try {
       // 中間APIのエンドポイントに変更
-      const response = await axios.get("https://garbage-tracker-k2gruawvb-tokuda99s-projects.vercel.app/api/post");
+      const response = await axios.get("https://www.garbage-tracker.com/api/location/garbage_tracker");
       console.log(response.data);
       setGPS(response.data.gps);
       setSendDateTime(response.data.sendDateTime);
