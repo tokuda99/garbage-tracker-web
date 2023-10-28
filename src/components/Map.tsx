@@ -48,27 +48,49 @@ const circleOptions = {
 
 const zoom = 20;
 
-type Center = {
+type LatLng = {
   lat: number;
   lng: number;
-}
+};
 
 
 
 export const Map = () => {
 
   const [show_info_window, setShowInfoWindow] = useState(false);
-  const [isAvailable, setAvailable] = useState(false);
-  const [position, setPosition] = useState({ latitude: null, longitude: null });
-  const isFirstRef = useRef(true);
+  // const [isAvailable, setAvailable] = useState(false);
+  const [position, setPosition] = useState<google.maps.LatLngLiteral | undefined>(undefined);
+  // const isFirstRef = useRef(true);
   useEffect(() => {
-    isFirstRef.current = false;
-    if ('geolocation' in navigator) {
-      setAvailable(true);
-    }
-  }, [isAvailable]);
+    getCurrentPosition();
+  }, []);
 
+  const getCurrentPosition = () => {
+    navigator.geolocation.getCurrentPosition(position => {
+      const { latitude, longitude } = position.coords;
+      console.log(latitude, longitude);
+      setPosition({ lat: latitude, lng: longitude});
+    });
+  };
 
+  const sendLocation = () => {
+    navigator.geolocation.getCurrentPosition(position => {
+      const { latitude, longitude } = position.coords;
+      console.log(latitude, longitude);
+      setPosition({ lat: latitude, lng: longitude});
+      const data = {
+        latitude,
+        longitude,
+      };
+      axios.post('https://www.garbage-tracker.com/api/location/user', data)
+      .then((response) => {
+        console.log('位置情報がPOSTされました', response.data);
+      })
+      .catch((error) => {
+        console.error('位置情報のPOSTに失敗しました', error);
+      });
+    });
+  };
 
   const [gps, setGPS] = useState<string>("");
   const [sendDateTime, setSendDateTime] = useState<string>("");
@@ -85,20 +107,18 @@ export const Map = () => {
     }
   }, []);
 
-  if (isFirstRef.current) return <div className="App">Loading...</div>;
+  // if (isFirstRef.current) return <div className="App">Loading...</div>;
 
   return (
     <LoadScript googleMapsApiKey="AIzaSyCLCUrzB2zAKgoN86_kp8hppPhgt1icFZQ">
       <h1>Send Date Time: {sendDateTime}</h1>
         <p>GPS: {gps}</p>
       <GoogleMap onClick={() => setShowInfoWindow(false)} mapContainerStyle={containerStyle} center={center} zoom={zoom}>
-        <CircleF center={center} radius={10} options={circleOptions} />
+        <CircleF center={position} radius={10} options={circleOptions} />
           <MarkerF position={garbage_tracker_center} label={garbage_tracker_markerLabe} icon={"https://maps.google.com/mapfiles/ms/micons/drinking_water.png"} onClick={() => setShowInfoWindow(true)}>
           {show_info_window && <InfoWindowF options={infoWindowOptions} onCloseClick={() => setShowInfoWindow(false)}>
             <div className={'flex flex-col flex-grow'}>
-              <button className="bg-green-900 hover:bg-green-500 text-white font-medium rounded px-4 py-2" onClick={function (){
-              alert(123);
-            }}>COME ON!</button>
+              <button className="bg-green-900 hover:bg-green-500 text-white font-medium rounded px-4 py-2" onClick={sendLocation}>COME ON!</button>
                 </div>
           </InfoWindowF>}
         </MarkerF>

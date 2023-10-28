@@ -1,28 +1,31 @@
-import React from "react";
-import axios from "axios";
-import { useState} from "react";
-import { useAsync } from "react-use";
+import { useState, useEffect } from 'react';
 
-const Sales: React.FC = () => {
-  const [location, setLocation] = useState<{latitude: string; longitude: string; latitude2: string; longitude2: string} | null>(null);
+interface Location {
+  latitude: string;
+  longitude: string;
+}
 
-  useAsync(async () => {
-    try {
-      // 中間APIのエンドポイントに変更
-      const response = await axios.get("https://www.garbage-tracker.com/api/location/user");
-      setLocation({
-        latitude: response.data.latitude,
-        longitude: response.data.longitude,
-        latitude2: response.data.latitude2,
-        longitude2: response.data.longitude2,
-      });
-      console.log(response);
+export default function LocationInfo() {
+  const [location, setLocation] = useState<Location | null>(null);
 
-    } catch (e) {
-      console.log(e);
-    }
+  useEffect(() => {
+    // サーバーサイドで位置情報を取得するAPIを呼び出す
+    fetch('/api/getGeolocation')
+      .then((response) => response.json())
+      .then((data: Location) => setLocation(data))
+      .catch((error) => console.error(error));
   }, []);
-  return <div>{location?.latitude} {location?.longitude}</div>;
-};
 
-export default Sales;
+  return (
+    <div>
+      {location ? (
+        <div>
+          <p>緯度: {location.latitude}</p>
+          <p>経度: {location.longitude}</p>
+        </div>
+      ) : (
+        <p>位置情報を取得中...</p>
+      )}
+    </div>
+  );
+}
