@@ -19,12 +19,10 @@ export default async function handler(
           const latitude2 = 35.682839;
           const longitude2 = 139.759455;
           const locationData = {
-            data: {
               latitude,
               longitude,
               latitude2,
               longitude2,
-            },
           };
       
           // レスポンスとしてJSONデータを返す

@@ -10,8 +10,12 @@ const Sales: React.FC = () => {
     try {
       // 中間APIのエンドポイントに変更
       const response = await axios.get("https://www.garbage-tracker.com/api/location/user");
-      console.log(response);
-      setLocation(response.data);
+      setLocation({
+        latitude: response.data.latitude,
+        longitude: response.data.longitude,
+        latitude2: response.data.latitude2,
+        longitude2: response.data.longitude2,
+      });
       console.log(response);
 
     } catch (e) {
