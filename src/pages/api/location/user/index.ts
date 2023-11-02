@@ -5,9 +5,9 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method === 'POST') {
     const { latitude, longitude } = req.body;
     try {
-      console.log('latitude:', latitude);
-      console.log('longitude:', longitude);
       res.status(200).json({ latitude, longitude });
+      const response = await axios.post('http://192.168.50.12:5000', { latitude, longitude });
+      console.log('位置情報がPOSTされました', response.data);
     }
     catch (error) {
       console.error('エラー:', error);
