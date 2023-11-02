@@ -111,9 +111,7 @@ export const Map = () => {
 
   return (
     <LoadScript googleMapsApiKey="AIzaSyCLCUrzB2zAKgoN86_kp8hppPhgt1icFZQ">
-      <h1>Send Date Time: {sendDateTime}</h1>
-        <p>GPS: {gps}</p>
-      <GoogleMap onClick={() => setShowInfoWindow(false)} mapContainerStyle={containerStyle} center={center} zoom={zoom}>
+      <GoogleMap onClick={() => setShowInfoWindow(false)} mapContainerStyle={containerStyle} center={position} zoom={zoom}>
         <CircleF center={position} radius={10} options={circleOptions} />
           <MarkerF position={garbage_tracker_center} label={garbage_tracker_markerLabe} icon={"https://maps.google.com/mapfiles/ms/micons/drinking_water.png"} onClick={() => setShowInfoWindow(true)}>
           {show_info_window && <InfoWindowF options={infoWindowOptions} onCloseClick={() => setShowInfoWindow(false)}>
