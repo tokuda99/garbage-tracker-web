@@ -3,7 +3,7 @@ import { atom, useRecoilValue, useSetRecoilState } from 'recoil';
 
 const isSidebarOpenRecoilState = atom<boolean>({
   key: 'isSidebarOpenRecoilState',
-  default: true,
+  default: false,
 });
 
 export const useIsSidebarOpenState = () => {
