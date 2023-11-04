@@ -9,19 +9,11 @@ const containerStyle = {
   height: "86vh",
 };
 
-let center = {
-  lat: 35.1354425,
-  lng: 136.9785947,
-};
+// const garbage_tracker_center = {
+//   lat: 35.1354425,
+//   lng: 136.9784947,
+// };
 
-const garbage_tracker_center = {
-  lat: 35.1354425,
-  lng: 136.9784947,
-};
-const garbage_tracker_info_center = {
-  lat: 35.1354425+0.0001,
-  lng: 136.9784947,
-};
 const garbage_tracker_markerLabe = {
   color: "white",
   fontFamily: "sans-serif",
@@ -59,8 +51,11 @@ export const Map = () => {
 
   const [show_info_window, setShowInfoWindow] = useState(false);
   // const [isAvailable, setAvailable] = useState(false);
-  const [position, setPosition] = useState<google.maps.LatLngLiteral | undefined>(undefined);
-  // const isFirstRef = useRef(true);
+  const [user_center, setUserCenter] = useState<google.maps.LatLngLiteral | undefined>(undefined);
+  const [garbage_tracker_center, setGarbageTrackerCenter] = useState<google.maps.LatLngLiteral | LatLng>({lat: 36.0, lng: 137.166667});
+  const [isCalled, setCalled] = useState<boolean>(false);
+
+    // const isFirstRef = useRef(true);
   useEffect(() => {
     getCurrentPosition();
   }, []);
@@ -68,16 +63,14 @@ export const Map = () => {
   const getCurrentPosition = () => {
     navigator.geolocation.getCurrentPosition(position => {
       const { latitude, longitude } = position.coords;
-      console.log(latitude, longitude);
-      setPosition({ lat: latitude, lng: longitude});
+      setUserCenter({ lat: latitude, lng: longitude});
     });
   };
 
-  const sendLocation = () => {
+  const callGarbageTracker = () => {
     navigator.geolocation.getCurrentPosition(position => {
       const { latitude, longitude } = position.coords;
-      console.log(latitude, longitude);
-      setPosition({ lat: latitude, lng: longitude});
+      setUserCenter({ lat: latitude, lng: longitude});
       const data = {
         latitude,
         longitude,
@@ -85,11 +78,21 @@ export const Map = () => {
       axios.post('https://www.garbage-tracker.com/api/location/user', data)
       .then((response) => {
         console.log('位置情報がPOSTされました', response.data);
+        setCalled(true);
       })
       .catch((error) => {
         console.error('位置情報のPOSTに失敗しました', error);
       });
     });
+
+    axios.post('http://localhost:3000/api/call_buffer', { isCalled })
+    .then((response) => {
+      console.log('呼び出し中', response.data);
+    })
+    .catch((error) => {
+      console.error('呼び出しに失敗しました', error);
+    });
+    
   };
 
   const [gps, setGPS] = useState<string>("");
@@ -99,24 +102,30 @@ export const Map = () => {
     try {
       // 中間APIのエンドポイントに変更
       const response = await axios.get("https://www.garbage-tracker.com/api/location/garbage_tracker");
-      console.log(response.data);
-      setGPS(response.data.gps);
-      setSendDateTime(response.data.sendDateTime);
+      const gpsData = response.data.gps;
+      const sendDateTimeData = response.data.sendDateTime;
+      setGPS(gpsData);
+      setSendDateTime(sendDateTimeData);
+      const parts = gps.split(" ");
+      const latitude = parseFloat(parts[0]) + parseFloat(parts[1]) / 60;
+      const longitude = parseFloat(parts[2]) + parseFloat(parts[3]) / 60;
+      setGarbageTrackerCenter({ lat: latitude, lng: longitude});
+      console.log(latitude)
     } catch (e) {
       console.log(e);
     }
-  }, []);
+  }, [garbage_tracker_center]);
 
   // if (isFirstRef.current) return <div className="App">Loading...</div>;
 
   return (
     <LoadScript googleMapsApiKey="AIzaSyCLCUrzB2zAKgoN86_kp8hppPhgt1icFZQ">
-      <GoogleMap onClick={() => setShowInfoWindow(false)} mapContainerStyle={containerStyle} center={position} zoom={zoom}>
-        <CircleF center={position} radius={10} options={circleOptions} />
+      <GoogleMap onClick={() => setShowInfoWindow(false)} mapContainerStyle={containerStyle} center={user_center} zoom={zoom}>
+        <CircleF center={user_center} radius={10} options={circleOptions} />
           <MarkerF position={garbage_tracker_center} label={garbage_tracker_markerLabe} icon={"https://maps.google.com/mapfiles/ms/micons/drinking_water.png"} onClick={() => setShowInfoWindow(true)}>
           {show_info_window && <InfoWindowF options={infoWindowOptions} onCloseClick={() => setShowInfoWindow(false)}>
             <div className={'flex flex-col flex-grow'}>
-              <button className="bg-green-900 hover:bg-green-500 text-white font-medium rounded px-4 py-2" onClick={sendLocation}>COME ON!</button>
+              <button className="bg-green-900 hover:bg-green-500 text-white font-medium rounded px-4 py-2" onClick={callGarbageTracker}>COME ON!</button>
                 </div>
           </InfoWindowF>}
         </MarkerF>
@@ -126,65 +135,3 @@ export const Map = () => {
 };
 
 export default Map;
-
-
-
-
-
-
-  // const [garbageTrackerCenter, setGarbageTrackerCenter] = useState<{ gbt_lat: number; gbt_lng: number }>({
-  //     gbt_lat: 0,
-  //     gbt_lng: 0,
-  //   }
-  // );
-
-  // useEffect(() => {
-  //   axios.post('https://api.clip-viewer-lite.com/auth/token', {
-  //     username: '233427034@ccmailg.meijo-u.ac.jp',
-  //     password: 'Meijou128'
-  //     }, {
-  //         headers: {
-  //             'X-API-Key': 'jd3J5V2Ohx8F66iiRAXwf4EfSnWG0kJkassTO4Ce'
-  //         }
-  //   })
-  //   .then(response => {
-  //     const authToken = response.data.token;
-  //     // 取得したトークンを使用して GET リクエストを送信する
-  //     axios.get('https://api.clip-viewer-lite.com/payload/latest/000101979d', {
-  //         headers: {
-  //             'X-API-Key': 'jd3J5V2Ohx8F66iiRAXwf4EfSnWG0kJkassTO4Ce',
-  //             'Authorization': authToken
-  //         }
-  //     })
-  //     .then(response => {
-  //         // GET リクエストの結果を処理する
-  //         console.log(response.data);
-  //         console.log("");
-  //         // sendDateTimeとgpsを抽出
-  //         const payloadData = response.data.payload[0]; // レスポンス内の最初のデータを取得
-  //         const sendDateTime = payloadData.sendDateTime;
-  //         const gps = payloadData.gps;
-  //         const parts = gps.split(' ');
-
-  //         // 数値型に変換
-  //         const numericValues = parts
-  //           .filter(part => !isNaN(parseFloat(part)))
-  //           .map(part => parseFloat(part));
-  //         let gbt_lat: number = numericValues[0] + numericValues[1]*0.01;
-  //         let gbt_lng: number = numericValues[2] + numericValues[3]*0.01;
-  //         const garbage_tracker_center: Center = {
-  //           lat: {gbt_lat},
-  //           lng: {gbt_lng}
-  //         }
-  //         // setGarbageTrackerCenter({
-  //         //   gbt_lat: numericValues[0] + numericValues[1]*0.01,
-  //         //   gbt_lng: numericValues[2] + numericValues[3]*0.01,
-  //         // })
-  //         console.log('sendDateTime:',sendDateTime);
-  //         console.log('sendDateTime:',sendDateTime);
-
-  //     });
-  //   });
-  // }, []);
-  // const handleClick = (e) => {
-  // }
