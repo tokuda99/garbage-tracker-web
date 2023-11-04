@@ -95,22 +95,14 @@ export const Map = () => {
     
   };
 
-  const [gps, setGPS] = useState<string>("");
-  const [sendDateTime, setSendDateTime] = useState<string>("");
-
   useAsync(async () => {
     try {
       // 中間APIのエンドポイントに変更
       const response = await axios.get("https://www.garbage-tracker.com/api/location/garbage_tracker");
-      const gpsData = response.data.gps;
-      const sendDateTimeData = response.data.sendDateTime;
-      setGPS(gpsData);
-      setSendDateTime(sendDateTimeData);
-      const parts = gps.split(" ");
-      const latitude = parseFloat(parts[0]) + parseFloat(parts[1]) / 60;
-      const longitude = parseFloat(parts[2]) + parseFloat(parts[3]) / 60;
-      setGarbageTrackerCenter({ lat: latitude, lng: longitude});
-      console.log(latitude)
+      const gbg_tracker_lat = response.data.lat;
+      const gbg_tracker_lng = response.data.lng;
+      setGarbageTrackerCenter({ lat: gbg_tracker_lat, lng: gbg_tracker_lng});
+      console.log(gbg_tracker_lat)
     } catch (e) {
       console.log(e);
     }

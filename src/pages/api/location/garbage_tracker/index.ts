@@ -26,10 +26,11 @@ export default async function handler(
         });
   
         const payloadData = payloadResponse.data.payload[0];
-        const sendDateTime = payloadData.sendDateTime;
         const gps = payloadData.gps;
-  
-        res.status(200).json({ sendDateTime, gps });
+        const parts = gps.split(" ");
+        const latitude = parseFloat(parts[0]) + parseFloat(parts[1]) / 60;
+        const longitude = parseFloat(parts[2]) + parseFloat(parts[3]) / 60;
+        res.status(200).json({ lat: latitude, lng: longitude});
       } catch (error) {
         console.error('エラー:', error);
         res.status(500).json({ error: "内部サーバーエラー" });
