@@ -85,7 +85,7 @@ export const Map = () => {
       });
     });
 
-    axios.post('http://localhost:3000/api/call_buffer', { isCalled })
+    axios.post('https://www.garbage-tracker.com/api/call_buffer', { isCalled })
     .then((response) => {
       console.log('呼び出し中', response.data);
     })
