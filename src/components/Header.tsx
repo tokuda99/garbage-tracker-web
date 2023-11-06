@@ -1,6 +1,8 @@
 import { useIsSidebarOpenMutator } from '@/recoil/isSidebarOpen/isSidebarOpen';
 import { RxHamburgerMenu } from 'react-icons/rx';
-import { FaReact } from 'react-icons/fa';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTrashCan } from '@fortawesome/free-solid-svg-icons';
+
 
 export const Header = () => {
   const { toggleIsSidebarOpen } = useIsSidebarOpenMutator();
@@ -13,10 +15,10 @@ export const Header = () => {
         <RxHamburgerMenu size={24} className={'text-white'}/>
       </button>
       <div className={'flex items-center'}>
-        <FaReact size={24} className={'text-white'}/>
+      <FontAwesomeIcon icon={faTrashCan} className={'text-white'}/>
         <p className={'ml-10 text-18 text-white'}>Garbage Tracker</p>
       </div>
-      <p className={'text-white'}>Grabage.Inc</p>
+      <p className={'text-white'}></p>
     </header>
   );
 };

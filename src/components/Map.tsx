@@ -117,7 +117,7 @@ export const Map = () => {
           <MarkerF position={garbage_tracker_center} label={garbage_tracker_markerLabe} icon={"https://maps.google.com/mapfiles/ms/micons/drinking_water.png"} onClick={() => setShowInfoWindow(true)}>
           {show_info_window && <InfoWindowF options={infoWindowOptions} onCloseClick={() => setShowInfoWindow(false)}>
             <div className={'flex flex-col flex-grow'}>
-              <button className="bg-green-900 hover:bg-green-500 text-white font-medium rounded px-4 py-2" onClick={callGarbageTracker}>COME ON!</button>
+              <button className="bg-orange-500 hover:bg-orange-300 text-white font-medium rounded px-4 py-2" onClick={callGarbageTracker}>COME ON!</button>
                 </div>
           </InfoWindowF>}
         </MarkerF>
