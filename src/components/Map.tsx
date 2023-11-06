@@ -64,6 +64,8 @@ export const Map = () => {
     // const isFirstRef = useRef(true);
   useEffect(() => {
     getCurrentPosition();
+    startWatchPosition();
+    fetchData();
   }, []);
 
   const startWatchPosition = () => {
@@ -110,18 +112,30 @@ export const Map = () => {
     
   };
 
-  useAsync(async () => {
+  // useAsync(async () => {
+  //   try {
+  //     // 中間APIのエンドポイントに変更
+  //     const response = await axios.get("https://www.garbage-tracker.com/api/location/garbage_tracker");
+  //     const gbg_tracker_lat = response.data.lat;
+  //     const gbg_tracker_lng = response.data.lng;
+  //     setGarbageTrackerCenter({ lat: gbg_tracker_lat, lng: gbg_tracker_lng});
+  //     console.log(gbg_tracker_lat)
+  //   } catch (e) {
+  //     console.log(e);
+  //   }
+  // }, []);
+
+  const fetchData = async () => {
     try {
-      // 中間APIのエンドポイントに変更
-      const response = await axios.get("https://www.garbage-tracker.com/api/location/garbage_tracker");
-      const gbg_tracker_lat = response.data.lat;
-      const gbg_tracker_lng = response.data.lng;
-      setGarbageTrackerCenter({ lat: gbg_tracker_lat, lng: gbg_tracker_lng});
-      console.log(gbg_tracker_lat)
-    } catch (e) {
-      console.log(e);
+      const response = await axios.get('https://www.garbage-tracker.com/api/location/garbage_tracker');
+      const gbgTrackerLat = response.data.lat;
+      const gbgTrackerLng = response.data.lng;
+      setGarbageTrackerCenter({ lat: gbgTrackerLat, lng: gbgTrackerLng });
+      console.log(gbgTrackerLat);
+    } catch (error) {
+      console.log(error);
     }
-  }, [garbage_tracker_center]);
+  };
 
   // if (isFirstRef.current) return <div className="App">Loading...</div>;
 
