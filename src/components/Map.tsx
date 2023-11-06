@@ -4,6 +4,7 @@ import { Watch } from "@/types";
 import { useAsync } from "react-use";
 import { GoogleMap, LoadScript, CircleF, MarkerF, InfoWindowF } from "@react-google-maps/api";
 import { PiHandsClappingDuotone } from 'react-icons/pi';
+import { BiRun } from 'react-icons/bi';
 
 const containerStyle = {
   width: "100%",
@@ -85,11 +86,11 @@ export const Map = () => {
 
   const callGarbageTracker = () => {
     getUserLocation();
+    setCalled(true);
     axios.post('https://www.garbage-tracker.com/api/location/user', { latitude: user_location?.lat, longitude: user_location?.lng })
     .then((response) => {
       console.log('位置情報がPOSTされました', response.data);
 
-      setCalled(true);
     })
     .catch((error) => {
       console.error('位置情報のPOSTに失敗しました', error);
@@ -102,6 +103,10 @@ export const Map = () => {
       console.error('呼び出しに失敗しました', error);
     });
     
+  };
+
+  const cancelGbgTracker = () => {
+    setCalled(false);
   };
 
   // useAsync(async () => {
@@ -137,10 +142,19 @@ export const Map = () => {
         <CircleF center={user_location} radius={10} options={circleOptions} />
           <MarkerF position={gbg_tracker_location} label={garbage_tracker_markerLabel} icon={"https://maps.google.com/mapfiles/ms/micons/drinking_water.png"} onClick={() => setShowInfoWindow(true)}>
           {show_info_window && <InfoWindowF options={infoWindowOptions} onCloseClick={() => setShowInfoWindow(false)}>
+            {!isCalled ? (
             <div className={'flex flex-col flex-grow items-center'}>
               <button className="hover:text-orange-400 text-orange-500 font-medium rounded px-4 py-2" onClick={callGarbageTracker}> COME ON!</button>
               <PiHandsClappingDuotone color={'black'} size={30} onClick={callGarbageTracker}/>
             </div>
+            ) : (
+            <div className={'flex flex-col flex-grow items-center'}>
+              <a className="text-green-500 font-medium rounded px-4 py-2"> Now going...</a>
+              <a className="text-black-500 font-medium rounded px-4 py-2"> Expected arrival time: 1 miniute </a>
+              <BiRun color={'black'} size={30}/>
+              <button className="hover:text-red-400 text-red-500 font-medium rounded px-4 py-2" onClick={cancelGbgTracker}> CANCEL</button>
+            </div>
+            )}
           </InfoWindowF>}
         </MarkerF>
       </GoogleMap>

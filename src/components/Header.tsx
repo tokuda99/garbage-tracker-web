@@ -15,7 +15,6 @@ export const Header = () => {
         <RxHamburgerMenu size={24} className={'text-white'}/>
       </button>
       <div className={'flex items-center'}>
-      <FontAwesomeIcon icon={faTrashCan} className={'text-white'}/>
         <p className={'ml-10 text-18 text-white'}>Garbage Tracker</p>
       </div>
       <p className={'text-white'}></p>
