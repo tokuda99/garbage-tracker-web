@@ -30,8 +30,8 @@ export default async function handler(
         const parts = gps.split(" ");
         const latitude = parseFloat(parts[0]) + parseFloat(parts[1]) / 60;
         const longitude = parseFloat(parts[2]) + parseFloat(parts[3]) / 60;
-        // res.status(200).json({ lat: latitude, lng: longitude});
-        res.status(200).json({ lat: 35.13537, lng: 136.97871});
+        res.status(200).json({ lat: latitude, lng: longitude});
+        // res.status(200).json({ lat: 35.13537, lng: 136.97871});
       } catch (error) {
         console.error('エラー:', error);
         res.status(500).json({ error: "内部サーバーエラー" });
