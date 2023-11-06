@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef} from "react";
 import axios from "axios";
+import { Watch } from "@/types";
 import { useAsync } from "react-use";
 import { GoogleMap, LoadScript, CircleF, MarkerF, InfoWindowF } from "@react-google-maps/api";
 import { PiHandsClappingDuotone } from 'react-icons/pi';
@@ -8,11 +9,6 @@ const containerStyle = {
   width: "100%",
   height: "86vh",
 };
-
-// const garbage_tracker_center = {
-//   lat: 35.1354425,
-//   lng: 136.9784947,
-// };
 
 const garbage_tracker_markerLabel = {
   color: "white",
@@ -45,55 +41,51 @@ const zoom = 20;
 //   lng: number;
 // };
 
-type Watch = {
-  isWatching: boolean;
-  watchId: number | null;
-};
 
 
 
 export const Map = () => {
 
   const [show_info_window, setShowInfoWindow] = useState(false);
-  // const [isAvailable, setAvailable] = useState(false);
-  const [user_center, setUserCenter] = useState<google.maps.LatLngLiteral | undefined>(undefined);
-  const [garbage_tracker_center, setGarbageTrackerCenter] = useState<google.maps.LatLngLiteral | google.maps.LatLngLiteral>({lat: 36.0, lng: 137.166667});
   const [isCalled, setCalled] = useState<boolean>(false);
+  const [user_location, setUserLocation] = useState<google.maps.LatLngLiteral | undefined>(undefined);
+  const [gbg_tracker_location, setGbgTrackerCenter] = useState<google.maps.LatLngLiteral | google.maps.LatLngLiteral>({lat: 36.0, lng: 137.166667});
   const [watchStatus, setWatchStatus] = useState<Watch>({isWatching: false, watchId: null});
-
+  // const [isAvailable, setAvailable] = useState(false);
+  
     // const isFirstRef = useRef(true);
   useEffect(() => {
-    getCurrentPosition();
-    startWatchPosition();
-    fetchData();
+    getUserLocation();
+    startWatchUserLocation();
+    getGbgTrackerLocation();
   }, []);
 
-  const startWatchPosition = () => {
+  const startWatchUserLocation = () => {
     const watchId = navigator.geolocation.watchPosition(position => {
       const { latitude, longitude } = position.coords;
-      setUserCenter({ lat: latitude, lng: longitude});
+      setUserLocation({ lat: latitude, lng: longitude});
     });
 
     setWatchStatus({ isWatching: true, watchId });
   };
 
-  const stopWatchPosition = (watchId: number | null) => {
+  const stopWatchUserLocation = (watchId: number | null) => {
     if (watchId !== null) {
       navigator.geolocation.clearWatch(watchId);
       setWatchStatus({ isWatching: false, watchId: null });
     }
   }
 
-  const getCurrentPosition = () => {
+  const getUserLocation = () => {
     navigator.geolocation.getCurrentPosition(position => {
       const { latitude, longitude } = position.coords;
-      setUserCenter({ lat: latitude, lng: longitude});
+      setUserLocation({ lat: latitude, lng: longitude});
     });
   };
 
   const callGarbageTracker = () => {
-    getCurrentPosition();
-    axios.post('https://www.garbage-tracker.com/api/location/user', { latitude: user_center?.lat, longitude: user_center?.lng })
+    getUserLocation();
+    axios.post('https://www.garbage-tracker.com/api/location/user', { latitude: user_location?.lat, longitude: user_location?.lng })
     .then((response) => {
       console.log('位置情報がPOSTされました', response.data);
 
@@ -118,19 +110,19 @@ export const Map = () => {
   //     const response = await axios.get("https://www.garbage-tracker.com/api/location/garbage_tracker");
   //     const gbg_tracker_lat = response.data.lat;
   //     const gbg_tracker_lng = response.data.lng;
-  //     setGarbageTrackerCenter({ lat: gbg_tracker_lat, lng: gbg_tracker_lng});
+  //     setGbgTrackerCenter({ lat: gbg_tracker_lat, lng: gbg_tracker_lng});
   //     console.log(gbg_tracker_lat)
   //   } catch (e) {
   //     console.log(e);
   //   }
   // }, []);
 
-  const fetchData = async () => {
+  const getGbgTrackerLocation = async () => {
     try {
       const response = await axios.get('https://www.garbage-tracker.com/api/location/garbage_tracker');
       const gbgTrackerLat = response.data.lat;
       const gbgTrackerLng = response.data.lng;
-      setGarbageTrackerCenter({ lat: gbgTrackerLat, lng: gbgTrackerLng });
+      setGbgTrackerCenter({ lat: gbgTrackerLat, lng: gbgTrackerLng });
       console.log(gbgTrackerLat);
     } catch (error) {
       console.log(error);
@@ -141,9 +133,9 @@ export const Map = () => {
 
   return (
     <LoadScript googleMapsApiKey="AIzaSyCLCUrzB2zAKgoN86_kp8hppPhgt1icFZQ">
-      <GoogleMap onClick={() => setShowInfoWindow(false)} mapContainerStyle={containerStyle} center={user_center} zoom={zoom}>
-        <CircleF center={user_center} radius={10} options={circleOptions} />
-          <MarkerF position={garbage_tracker_center} label={garbage_tracker_markerLabel} icon={"https://maps.google.com/mapfiles/ms/micons/drinking_water.png"} onClick={() => setShowInfoWindow(true)}>
+      <GoogleMap onClick={() => setShowInfoWindow(false)} mapContainerStyle={containerStyle} center={user_location} zoom={zoom}>
+        <CircleF center={user_location} radius={10} options={circleOptions} />
+          <MarkerF position={gbg_tracker_location} label={garbage_tracker_markerLabel} icon={"https://maps.google.com/mapfiles/ms/micons/drinking_water.png"} onClick={() => setShowInfoWindow(true)}>
           {show_info_window && <InfoWindowF options={infoWindowOptions} onCloseClick={() => setShowInfoWindow(false)}>
             <div className={'flex flex-col flex-grow items-center'}>
               <button className="hover:text-orange-400 text-orange-500 font-medium rounded px-4 py-2" onClick={callGarbageTracker}> COME ON!</button>
@@ -163,8 +155,8 @@ export default Map;
 
 //   const [show_info_window, setShowInfoWindow] = useState(false);
 //   // const [isAvailable, setAvailable] = useState(false);
-//   const [user_center, setUserCenter] = useState<google.maps.LatLngLiteral | undefined>(undefined);
-//   const [garbage_tracker_center, setGarbageTrackerCenter] = useState<google.maps.LatLngLiteral | LatLng>({lat: 36.0, lng: 137.166667});
+//   const [user_location, setUserLocation] = useState<google.maps.LatLngLiteral | undefined>(undefined);
+//   const [gbg_tracker_location, setGbgTrackerCenter] = useState<google.maps.LatLngLiteral | LatLng>({lat: 36.0, lng: 137.166667});
 //   const [isCalled, setCalled] = useState<boolean>(false);
 //   const [watchStatus, setWatchStatus] = useState<Watch>({isWatching: false, watchId: null});
 
@@ -176,7 +168,7 @@ export default Map;
 //   const startWatchPosition = () => {
 //     const watchId = navigator.geolocation.watchPosition(position => {
 //       const { latitude, longitude } = position.coords;
-//       setUserCenter({ lat: latitude, lng: longitude});
+//       setUserLocation({ lat: latitude, lng: longitude});
 //     });
 
 //     setWatchStatus({ isWatching: true, watchId });
@@ -192,14 +184,14 @@ export default Map;
 //   const getCurrentPosition = () => {
 //     navigator.geolocation.getCurrentPosition(position => {
 //       const { latitude, longitude } = position.coords;
-//       setUserCenter({ lat: latitude, lng: longitude});
+//       setUserLocation({ lat: latitude, lng: longitude});
 //     });
 //   };
 
 //   const callGarbageTracker = () => {
 //     navigator.geolocation.getCurrentPosition(position => {
 //       const { latitude, longitude } = position.coords;
-//       setUserCenter({ lat: latitude, lng: longitude});
+//       setUserLocation({ lat: latitude, lng: longitude});
 //       const data = {
 //         latitude,
 //         longitude,
@@ -230,20 +222,20 @@ export default Map;
 //       const response = await axios.get("https://www.garbage-tracker.com/api/location/garbage_tracker");
 //       const gbg_tracker_lat = response.data.lat;
 //       const gbg_tracker_lng = response.data.lng;
-//       setGarbageTrackerCenter({ lat: gbg_tracker_lat, lng: gbg_tracker_lng});
+//       setGbgTrackerCenter({ lat: gbg_tracker_lat, lng: gbg_tracker_lng});
 //       console.log(gbg_tracker_lat)
 //     } catch (e) {
 //       console.log(e);
 //     }
-//   }, [garbage_tracker_center]);
+//   }, [gbg_tracker_location]);
 
 //   // if (isFirstRef.current) return <div className="App">Loading...</div>;
 
 //   return (
 //     <LoadScript googleMapsApiKey="AIzaSyCLCUrzB2zAKgoN86_kp8hppPhgt1icFZQ">
-//       <GoogleMap onClick={() => setShowInfoWindow(false)} mapContainerStyle={containerStyle} center={user_center} zoom={zoom}>
-//         <CircleF center={user_center} radius={10} options={circleOptions} />
-//           <MarkerF position={garbage_tracker_center} label={garbage_tracker_markerLabel} icon={"https://maps.google.com/mapfiles/ms/micons/drinking_water.png"} onClick={() => setShowInfoWindow(true)}>
+//       <GoogleMap onClick={() => setShowInfoWindow(false)} mapContainerStyle={containerStyle} center={user_location} zoom={zoom}>
+//         <CircleF center={user_location} radius={10} options={circleOptions} />
+//           <MarkerF position={gbg_tracker_location} label={garbage_tracker_markerLabel} icon={"https://maps.google.com/mapfiles/ms/micons/drinking_water.png"} onClick={() => setShowInfoWindow(true)}>
 //           {show_info_window && <InfoWindowF options={infoWindowOptions} onCloseClick={() => setShowInfoWindow(false)}>
 //             <div className={'flex flex-col flex-grow'}>
 //               <button className="bg-orange-500 hover:bg-orange-300 text-white font-medium rounded px-4 py-2" onClick={callGarbageTracker}>COME ON!</button>
