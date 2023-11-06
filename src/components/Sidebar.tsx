@@ -5,7 +5,6 @@ import { FaStamp } from 'react-icons/fa';
 import { RiFileHistoryFill } from 'react-icons/ri'
 import { IoMdContact } from 'react-icons/io';
 import { MdContactSupport } from 'react-icons/md';
-
 import { useIsSidebarOpenState } from '@/recoil/isSidebarOpen/isSidebarOpen';
 
 export const Sidebar = () => {

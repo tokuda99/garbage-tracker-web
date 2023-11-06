@@ -133,7 +133,7 @@ export const Map = () => {
           {show_info_window && <InfoWindowF options={infoWindowOptions} onCloseClick={() => setShowInfoWindow(false)}>
             <div className={'flex flex-col flex-grow items-center'}>
               <button className="hover:text-orange-400 text-orange-500 font-medium rounded px-4 py-2" onClick={callGarbageTracker}> COME ON!</button>
-              <PiHandsClappingDuotone color={'black'} size={30}/>
+              <PiHandsClappingDuotone color={'black'} size={30} onClick={callGarbageTracker}/>
             </div>
           </InfoWindowF>}
         </MarkerF>
