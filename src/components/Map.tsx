@@ -5,6 +5,7 @@ import { useAsync } from "react-use";
 import { GoogleMap, LoadScript, CircleF, MarkerF, InfoWindowF } from "@react-google-maps/api";
 import { PiHandsClappingDuotone } from 'react-icons/pi';
 import { BiRun } from 'react-icons/bi';
+import { HiBan } from 'react-icons/hi';
 
 const containerStyle = {
   width: "100%",
@@ -159,7 +160,14 @@ export const Map = () => {
             )}
           </InfoWindowF>}
         </MarkerF>
-        <MarkerF position={gbg_tracker2_location} label={garbage_tracker_markerLabel} icon={"https://maps.google.com/mapfiles/ms/micons/drinking_water.png"}/>
+        <MarkerF position={gbg_tracker2_location} label={garbage_tracker_markerLabel} icon={"https://maps.google.com/mapfiles/ms/micons/drinking_water.png"}>
+        {show_info_window && <InfoWindowF options={infoWindowOptions} onCloseClick={() => setShowInfoWindow(false)}>
+          <div className={'flex flex-col flex-grow items-center'}>
+            <a className="text-red-500 font-medium rounded px-4 py-2"> Full</a>
+            <HiBan color={'red'} size={30}/>
+          </div>
+          </InfoWindowF>}
+        </MarkerF>
 
       </GoogleMap>
     </LoadScript>
