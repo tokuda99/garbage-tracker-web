@@ -42,7 +42,9 @@ const zoom = 20;
 //   lng: number;
 // };
 
-
+const gbg_tracker2_location = {
+  lat: 35.13537, lng: 136.97871
+};
 
 
 export const Map = () => {
@@ -157,6 +159,8 @@ export const Map = () => {
             )}
           </InfoWindowF>}
         </MarkerF>
+        <MarkerF position={gbg_tracker2_location} label={garbage_tracker_markerLabel} icon={"https://maps.google.com/mapfiles/ms/micons/drinking_water.png"}/>
+
       </GoogleMap>
     </LoadScript>
   );
